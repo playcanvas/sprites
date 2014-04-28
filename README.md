@@ -23,7 +23,7 @@ Creating a UI with Sprites
 
 Using the sprite.js script you can create a user interface for your application.
 
-- Create images using your favorite tool. For best quality sprites should be png files with witdth and height a power of 2.
+- Create images using your favorite tool. For best quality sprites should be png files with power of 2 width and height.
 - Upload them to PlayCanvas.
 
 For each one of your sprites:
