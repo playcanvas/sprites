@@ -64,7 +64,7 @@ That way you can have buttons that do something when you click on them.
 Progress Bars
 =============
 
-Check out this pack for an example as to how to make progress bars using sprites and different anchors:
+Check out this pack for an example on how to make progress bars using sprites and different anchors:
 
 http://playcanvas.com/playcanvas/tutorials/designer/pack/d2b86142-cfa3-11e3-8fd4-22000a4a0339
 
