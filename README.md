@@ -34,6 +34,9 @@ For each one of your sprites:
 - Set the rest of the fields to your liking
 - Launch the application
 
+Buttons
+=======
+
 You can attach an event handler for each sprite for the 'click' event. For example add this script on the same Entity as the sprite:
 
 ```
@@ -57,3 +60,11 @@ pc.script.create('myhandler', function (context) {
 ```
 
 That way you can have buttons that do something when you click on them.
+
+Progress Bars
+=============
+
+Check out this pack for an example as to how to make progress bars using sprites and different anchors:
+
+http://playcanvas.com/playcanvas/tutorials/designer/pack/d2b86142-cfa3-11e3-8fd4-22000a4a0339
+
