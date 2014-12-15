@@ -79,7 +79,7 @@ pc.script.attribute('maxResHeight', 'number', 720);
 
 pc.script.create('sprite', function (context) {
 
-    var shader = null;    
+    var shader = null;
     var vertexFormat = null;
     var resolution = new pc.Vec2();
 
@@ -96,7 +96,7 @@ pc.script.create('sprite', function (context) {
             this.scaling = new pc.Vec2();
             this.anchorOffset = new pc.Vec2();
             this.pivotOffset = new pc.Vec2();
-            
+
             // Create shader
             var gd = context.graphicsDevice;
 
@@ -115,7 +115,7 @@ pc.script.create('sprite', function (context) {
                         "uniform vec2 uScale;",
                         "",
                         "void main(void)",
-                        "{",                            
+                        "{",
                         "    gl_Position = vec4(2.0 * ((uScale * aPosition.xy + uOffset) / uResolution ) - 1.0, -0.9, 1.0);",
                         "    vUv0 = aUv0;",
                         "}"
@@ -136,11 +136,11 @@ pc.script.create('sprite', function (context) {
                         "}"
                     ].join("\n")
                 };
-        
+
                 shader = new pc.gfx.Shader(gd, shaderDefinition);
             }
-            
-    
+
+
             // Create the vertex format
             if (!vertexFormat) {
                 vertexFormat = new pc.gfx.VertexFormat(gd, [
@@ -152,7 +152,7 @@ pc.script.create('sprite', function (context) {
 
             // Load font assets
             var assets = [
-                context.assets.getAssetByResourceId(this.textureAsset),
+                context.assets.getAssetById(this.textureAsset),
             ];
 
             context.assets.load(assets).then(function (resources) {
@@ -161,9 +161,9 @@ pc.script.create('sprite', function (context) {
                 // Create a vertex buffer
                 this.vertexBuffer = new pc.gfx.VertexBuffer(gd, vertexFormat, 6, pc.gfx.BUFFER_DYNAMIC);
                 this.updateSprite();
-    
+
                 var command = new pc.scene.Command(pc.scene.LAYER_HUD, pc.scene.BLEND_NORMAL, function () {
-                    if (this.entity.enabled) {  
+                    if (this.entity.enabled) {
                         // Set the shader
                         gd.setShader(shader);
 
@@ -179,7 +179,7 @@ pc.script.create('sprite', function (context) {
                         gd.scope.resolve("uOffset").setValue(this.calculateOffset().data);
                         gd.scope.resolve("uColorMap").setValue(this.texture);
                         gd.scope.resolve("vTint").setValue(this.tint.data);
-                        
+
                         // Set the vertex buffer
                         gd.setVertexBuffer(this.vertexBuffer, 0);
                         gd.draw({
@@ -195,7 +195,7 @@ pc.script.create('sprite', function (context) {
                 command.key = this.depth;
 
                 context.scene.drawCalls.push(command);
-            }.bind(this)); 
+            }.bind(this));
 
             context.mouse.on('mousedown', this.onMouseDown, this);
             if (context.touch) {
@@ -241,10 +241,10 @@ pc.script.create('sprite', function (context) {
             mx = (2.0 * cursor.x / canvas.offsetWidth) - 1;
             my = (2.0 * (canvas.offsetHeight - cursor.y) / canvas.offsetHeight) - 1;
 
-            if (mx >= tlx && mx <= brx && 
+            if (mx >= tlx && mx <= brx &&
                 my <= tly && my >= bry) {
                 this.fire('click');
-            } 
+            }
         },
 
         onAttributeChanged: function (name, oldValue, newValue) {
@@ -252,25 +252,25 @@ pc.script.create('sprite', function (context) {
             if (name === 'depth') {
                 this.command.key = newValue;
             }
-            else if (name === 'width' || 
-                     name === 'height' || 
+            else if (name === 'width' ||
+                     name === 'height' ||
                      name === 'uPercentage' ||
                      name === 'vPercentage') {
 
                 this.updateSprite();
-            } 
+            }
         },
 
         updateSprite: function () {
             if (!this.vertexBuffer) {
                 return;
             }
-            
+
             // Fill the vertex buffer
             this.vertexBuffer.lock();
 
             var canvas = context.graphicsDevice.canvas;
-        
+
             // Add vertices
             var iterator = new pc.gfx.VertexIterator(this.vertexBuffer);
             iterator.element[pc.gfx.SEMANTIC_POSITION].set(0, -this.height);
@@ -357,7 +357,7 @@ pc.script.create('sprite', function (context) {
                 case 8:
                     this.anchorOffset.set(width, -height);
                     break;
-                default: 
+                default:
                     console.error('Wrong anchor: ' + this.anchor);
                     break;
             }
@@ -406,7 +406,7 @@ pc.script.create('sprite', function (context) {
                 case 8:
                     this.pivotOffset.set(-width, height);
                     break;
-                default: 
+                default:
                     console.error('Wrong pivot: ' + this.pivot);
                     break;
             }
