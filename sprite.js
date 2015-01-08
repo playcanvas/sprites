@@ -103,8 +103,8 @@ pc.script.create('sprite', function (context) {
             if (!shader) {
                 var shaderDefinition = {
                     attributes: {
-                        aPosition: pc.gfx.SEMANTIC_POSITION,
-                        aUv0: pc.gfx.SEMANTIC_TEXCOORD0
+                        aPosition: pc.SEMANTIC_POSITION,
+                        aUv0: pc.SEMANTIC_TEXCOORD0
                     },
                     vshader: [
                         "attribute vec2 aPosition;",
@@ -137,15 +137,15 @@ pc.script.create('sprite', function (context) {
                     ].join("\n")
                 };
 
-                shader = new pc.gfx.Shader(gd, shaderDefinition);
+                shader = new pc.Shader(gd, shaderDefinition);
             }
 
 
             // Create the vertex format
             if (!vertexFormat) {
-                vertexFormat = new pc.gfx.VertexFormat(gd, [
-                    { semantic: pc.gfx.SEMANTIC_POSITION, components: 2, type: pc.gfx.ELEMENTTYPE_FLOAT32 },
-                    { semantic: pc.gfx.SEMANTIC_TEXCOORD0, components: 2, type: pc.gfx.ELEMENTTYPE_FLOAT32 }
+                vertexFormat = new pc.VertexFormat(gd, [
+                    { semantic: pc.SEMANTIC_POSITION, components: 2, type: pc.ELEMENTTYPE_FLOAT32 },
+                    { semantic: pc.SEMANTIC_TEXCOORD0, components: 2, type: pc.ELEMENTTYPE_FLOAT32 }
                 ]);
             }
 
@@ -159,16 +159,16 @@ pc.script.create('sprite', function (context) {
                 this.texture = resources[0];
 
                 // Create a vertex buffer
-                this.vertexBuffer = new pc.gfx.VertexBuffer(gd, vertexFormat, 6, pc.gfx.BUFFER_DYNAMIC);
+                this.vertexBuffer = new pc.VertexBuffer(gd, vertexFormat, 6, pc.BUFFER_DYNAMIC);
                 this.updateSprite();
 
-                var command = new pc.scene.Command(pc.scene.LAYER_HUD, pc.scene.BLEND_NORMAL, function () {
+                var command = new pc.Command(pc.LAYER_HUD, pc.BLEND_NORMAL, function () {
                     if (this.entity.enabled) {
                         // Set the shader
                         gd.setShader(shader);
 
                         gd.setBlending(true);
-                        gd.setBlendFunction(pc.gfx.BLENDMODE_SRC_ALPHA, pc.gfx.BLENDMODE_ONE_MINUS_SRC_ALPHA);
+                        gd.setBlendFunction(pc.BLENDMODE_SRC_ALPHA, pc.BLENDMODE_ONE_MINUS_SRC_ALPHA);
                         gd.setDepthWrite(false);
                         gd.setDepthTest(false);
 
@@ -183,7 +183,7 @@ pc.script.create('sprite', function (context) {
                         // Set the vertex buffer
                         gd.setVertexBuffer(this.vertexBuffer, 0);
                         gd.draw({
-                            type: pc.gfx.PRIMITIVE_TRIANGLES,
+                            type: pc.PRIMITIVE_TRIANGLES,
                             base: 0,
                             count: 6,
                             indexed: false
@@ -272,24 +272,24 @@ pc.script.create('sprite', function (context) {
             var canvas = context.graphicsDevice.canvas;
 
             // Add vertices
-            var iterator = new pc.gfx.VertexIterator(this.vertexBuffer);
-            iterator.element[pc.gfx.SEMANTIC_POSITION].set(0, -this.height);
-            iterator.element[pc.gfx.SEMANTIC_TEXCOORD0].set(0, 0);
+            var iterator = new pc.VertexIterator(this.vertexBuffer);
+            iterator.element[pc.SEMANTIC_POSITION].set(0, -this.height);
+            iterator.element[pc.SEMANTIC_TEXCOORD0].set(0, 0);
             iterator.next();
-            iterator.element[pc.gfx.SEMANTIC_POSITION].set(this.width, -this.height);
-            iterator.element[pc.gfx.SEMANTIC_TEXCOORD0].set(this.uPercentage, 0);
+            iterator.element[pc.SEMANTIC_POSITION].set(this.width, -this.height);
+            iterator.element[pc.SEMANTIC_TEXCOORD0].set(this.uPercentage, 0);
             iterator.next();
-            iterator.element[pc.gfx.SEMANTIC_POSITION].set(0, 0);
-            iterator.element[pc.gfx.SEMANTIC_TEXCOORD0].set(0, this.vPercentage);
+            iterator.element[pc.SEMANTIC_POSITION].set(0, 0);
+            iterator.element[pc.SEMANTIC_TEXCOORD0].set(0, this.vPercentage);
             iterator.next();
-            iterator.element[pc.gfx.SEMANTIC_POSITION].set(this.width, -this.height);
-            iterator.element[pc.gfx.SEMANTIC_TEXCOORD0].set(this.uPercentage, 0);
+            iterator.element[pc.SEMANTIC_POSITION].set(this.width, -this.height);
+            iterator.element[pc.SEMANTIC_TEXCOORD0].set(this.uPercentage, 0);
             iterator.next();
-            iterator.element[pc.gfx.SEMANTIC_POSITION].set(this.width, 0);
-            iterator.element[pc.gfx.SEMANTIC_TEXCOORD0].set(this.uPercentage, this.vPercentage);
+            iterator.element[pc.SEMANTIC_POSITION].set(this.width, 0);
+            iterator.element[pc.SEMANTIC_TEXCOORD0].set(this.uPercentage, this.vPercentage);
             iterator.next();
-            iterator.element[pc.gfx.SEMANTIC_POSITION].set(0, 0);
-            iterator.element[pc.gfx.SEMANTIC_TEXCOORD0].set(0, this.vPercentage);
+            iterator.element[pc.SEMANTIC_POSITION].set(0, 0);
+            iterator.element[pc.SEMANTIC_TEXCOORD0].set(0, this.vPercentage);
 
             this.vertexBuffer.unlock();
         },
@@ -427,5 +427,5 @@ pc.script.create('sprite', function (context) {
         }
     };
 
-   return Sprite;
+    return Sprite;
 });
