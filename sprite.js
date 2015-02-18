@@ -424,6 +424,16 @@ pc.script.create('sprite', function (context) {
 
         update: function (dt) {
             this.eventsEnabled = true;
+        },
+
+        destroy: function () {
+            // remove draw call
+            if (this.command) {
+                var i = context.scene.drawCalls.indexOf(this.command);
+                if (i >= 0) {
+                    context.scene.drawCalls.splice(i, 1);
+                }
+            }
         }
     };
 
