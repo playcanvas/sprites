@@ -77,7 +77,7 @@ pc.script.attribute('tint', 'rgba', [1,1,1,1]);
 
 pc.script.attribute('maxResHeight', 'number', 720);
 
-pc.script.create('sprite', function (context) {
+pc.script.create('sprite', function (app) {
 
     var shader = null;
     var vertexFormat = null;
@@ -98,7 +98,7 @@ pc.script.create('sprite', function (context) {
             this.pivotOffset = new pc.Vec2();
 
             // Create shader
-            var gd = context.graphicsDevice;
+            var gd = app.graphicsDevice;
 
             if (!shader) {
                 var shaderDefinition = {
@@ -152,10 +152,10 @@ pc.script.create('sprite', function (context) {
 
             // Load font assets
             var assets = [
-                context.assets.getAssetById(this.textureAsset),
+                app.assets.getAssetById(this.textureAsset),
             ];
 
-            context.assets.load(assets).then(function (resources) {
+            app.assets.load(assets).then(function (resources) {
                 this.texture = resources[0];
 
                 // Create a vertex buffer
@@ -194,12 +194,12 @@ pc.script.create('sprite', function (context) {
                 this.command = command;
                 command.key = this.depth;
 
-                context.scene.drawCalls.push(command);
+                app.scene.drawCalls.push(command);
             }.bind(this));
 
-            context.mouse.on('mousedown', this.onMouseDown, this);
-            if (context.touch) {
-                context.touch.on('touchstart', this.onTouchDown, this);
+            app.mouse.on('mousedown', this.onMouseDown, this);
+            if (app.touch) {
+                app.touch.on('touchstart', this.onTouchDown, this);
             }
         },
 
@@ -224,7 +224,7 @@ pc.script.create('sprite', function (context) {
          * sprite and fires 'click' event if it has
          */
         onClick: function (cursor) {
-            var canvas = context.graphicsDevice.canvas;
+            var canvas = app.graphicsDevice.canvas;
             var tlx, tly, brx, bry, mx, my;
 
 
@@ -269,7 +269,7 @@ pc.script.create('sprite', function (context) {
             // Fill the vertex buffer
             this.vertexBuffer.lock();
 
-            var canvas = context.graphicsDevice.canvas;
+            var canvas = app.graphicsDevice.canvas;
 
             // Add vertices
             var iterator = new pc.VertexIterator(this.vertexBuffer);
@@ -295,7 +295,7 @@ pc.script.create('sprite', function (context) {
         },
 
         calculateOffset: function () {
-            var canvas = context.graphicsDevice.canvas;
+            var canvas = app.graphicsDevice.canvas;
             this.calculateAnchorOffset();
             this.calculatePivotOffset();
 
@@ -309,14 +309,14 @@ pc.script.create('sprite', function (context) {
         },
 
         calculateScaling: function () {
-            var canvas = context.graphicsDevice.canvas;
+            var canvas = app.graphicsDevice.canvas;
             var scale = canvas.offsetHeight / this.maxResHeight;
             this.scaling.set(scale, scale);
             return this.scaling;
         },
 
         calculateAnchorOffset: function () {
-            var canvas = context.graphicsDevice.canvas;
+            var canvas = app.graphicsDevice.canvas;
             var width = canvas.offsetWidth;
             var height = canvas.offsetHeight;
 
@@ -429,9 +429,9 @@ pc.script.create('sprite', function (context) {
         destroy: function () {
             // remove draw call
             if (this.command) {
-                var i = context.scene.drawCalls.indexOf(this.command);
+                var i = app.scene.drawCalls.indexOf(this.command);
                 if (i >= 0) {
-                    context.scene.drawCalls.splice(i, 1);
+                    app.scene.drawCalls.splice(i, 1);
                 }
             }
         }
