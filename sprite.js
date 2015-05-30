@@ -149,14 +149,10 @@ pc.script.create('sprite', function (app) {
                 ]);
             }
 
-
-            // Load font assets
-            var assets = [
-                app.assets.getAssetById(this.textureAsset),
-            ];
-
-            app.assets.load(assets).then(function (resources) {
-                this.texture = resources[0];
+            // Load the texture
+            var asset = app.assets.get(this.textureAsset);
+            asset.ready(function (asset) {
+                this.texture = asset.resource;
 
                 // Create a vertex buffer
                 this.vertexBuffer = new pc.VertexBuffer(gd, vertexFormat, 6, pc.BUFFER_DYNAMIC);
@@ -196,6 +192,7 @@ pc.script.create('sprite', function (app) {
 
                 app.scene.drawCalls.push(command);
             }.bind(this));
+            app.assets.load(asset);
 
             app.mouse.on('mousedown', this.onMouseDown, this);
             if (app.touch) {
