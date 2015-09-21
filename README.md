@@ -40,7 +40,7 @@ Buttons
 You can attach an event handler for each sprite for the 'click' event. For example add this script on the same Entity as the sprite:
 
 ```
-pc.script.create('myhandler', function (context) {
+pc.script.create('myhandler', function (app) {
     var Myhandler = function (entity) {
         this.entity = entity;
     };
@@ -66,7 +66,7 @@ Progress Bars
 
 Check out this pack for an example on how to make progress bars using sprites and different anchors:
 
-http://playcanvas.com/playcanvas/tutorials/designer/pack/d2b86142-cfa3-11e3-8fd4-22000a4a0339
+https://playcanvas.com/editor/scene/336436
 
 Rendering Text
 ==============
