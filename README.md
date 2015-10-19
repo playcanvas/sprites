@@ -6,6 +6,7 @@ Download sprite.js and upload it to your project or copy paste the code in a new
 Add the script to an Entity with a Script Component. You will see the following script attributes:
 
 - **textureAsset**: This is the sprite that you want to render. If you want transparency for your sprite make sure that this is a .png file.
+- **eventsEnabled**: This is the toggle to allow events when interacting with the sprite.
 - **x**: This is the x **screen** coordinate for your sprite.
 - **y**: This is the y **screen** coordinate for your sprite.
 - **width**: This is the width of your sprite in pixels. For best results use the actual width of the uploaded image. Powers of 2 have better quality.
