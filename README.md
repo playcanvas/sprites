@@ -6,10 +6,8 @@ Download sprite.js and upload it to your project or copy paste the code in a new
 Add the script to an Entity with a Script Component. You will see the following script attributes:
 
 - **textureAsset**: This is the sprite that you want to render. If you want transparency for your sprite make sure that this is a .png file.
-- **x**: This is the x **screen** coordinate for your sprite.
-- **y**: This is the y **screen** coordinate for your sprite.
-- **width**: This is the width of your sprite in pixels. For best results use the actual width of the uploaded image. Powers of 2 have better quality.
-- **height**: This is the height of your sprite in pixels. For best results use the actual height of the uploaded image. Powers of 2 have better quality.
+- **pos**: This is the Vec2 (x,y) **screen** coordinate for your sprite.
+- **size**: This is the width and height as Vec2 of your sprite in pixels. For best results use the actual width of the uploaded image. Powers of 2 have better quality.
 - **depth**: This is the z-index of your sprite. If you want it to appear behind other sprites increase this value.
 - **uPercentage**: A value between [0,1] that specifies the maximum u value of the texture.
 - **vPercentage**: A value between [0,1] that specifies the maximum v value of the texture.
@@ -29,7 +27,7 @@ Using the sprite.js script you can create a user interface for your application.
 For each one of your sprites:
 - Create an Entity
 - Add a script component to the Entity
-- Add sprite.js in the URLs field
+- Add sprite to script component
 - Click on textureAsset and pick the desired image
 - Set the rest of the fields to your liking
 - Launch the application
@@ -40,23 +38,15 @@ Buttons
 You can attach an event handler for each sprite for the 'click' event. For example add this script on the same Entity as the sprite:
 
 ```
-pc.script.create('myhandler', function (app) {
-    var Myhandler = function (entity) {
-        this.entity = entity;
-    };
+var MyScript = pc.createScript('myScript');
 
-    Myhandler.prototype = {
-        initialize: function () {
-            this.entity.script.sprite.on('click', this.onClick, this);
-        },
+MyScript.prototype.initialize = function() {
+    this.entity.script.sprite.on('click', this.onClick, this);
+};
 
-        onClick: function () {
-            console.log('Click');
-        }
-    };
-
-    return MyHandler;
-});
+MyScript.prototype.onClick = function() {
+    console.log('click');
+};
 ```
 
 That way you can have buttons that do something when you click on them.
@@ -72,4 +62,3 @@ Rendering Text
 ==============
 
 Check out this repository for scripts and details on how to render bitmap fonts: https://github.com/playcanvas/fonts
-
