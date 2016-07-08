@@ -56,7 +56,7 @@ Progress Bars
 
 Check out this pack for an example on how to make progress bars using sprites and different anchors:
 
-https://playcanvas.com/editor/scene/336436
+https://playcanvas.com/editor/scene/443447
 
 Rendering Text
 ==============
