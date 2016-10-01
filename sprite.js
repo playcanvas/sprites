@@ -21,7 +21,7 @@ Sprite.attributes.add('size', {
     description: 'The size of sprite in pixels',
     placeholder: [ 'w', 'h' ],
     default: [ 128, 128 ]
-})
+});
 
 Sprite.attributes.add('depth', {
     type: 'number',
