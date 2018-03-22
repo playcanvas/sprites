@@ -95,7 +95,7 @@ Sprite.attributes.add('maxResHeight', {
 /**
  * Static variables
  */
-Sprite.shader = null;
+Sprite.material = null;
 Sprite.vertexFormat = null;
 Sprite.resolution = new pc.Vec2();
 
@@ -115,7 +115,8 @@ Sprite.prototype.initialize = function() {
     // Create shader
     var gd = app.graphicsDevice;
 
-    if (!Sprite.shader) {
+    // Create material and shader
+    if (! Sprite.material) {
         var shaderDefinition = {
             attributes: {
                 aPosition: pc.SEMANTIC_POSITION,
@@ -152,9 +153,17 @@ Sprite.prototype.initialize = function() {
             ].join("\n")
         };
 
-        Sprite.shader = new pc.Shader(gd, shaderDefinition);
-    }
+        var shader = new pc.Shader(gd, shaderDefinition);
 
+        var material = new pc.Material();
+        material.shader = shader;
+        material.blend = true;
+        material.blendSrc = pc.BLENDMODE_SRC_ALPHA;
+        material.blendDst = pc.BLENDMODE_ONE_MINUS_SRC_ALPHA;
+        material.depthTest = false;
+        material.depthWrite = false;
+        Sprite.material = material;
+    }
 
     // Create the vertex format
     if (!Sprite.vertexFormat) {
@@ -164,45 +173,27 @@ Sprite.prototype.initialize = function() {
         ]);
     }
 
+    // Create mesh
+    var mesh = new pc.Mesh();
+    mesh.vertexBuffer = new pc.VertexBuffer(gd, Sprite.vertexFormat, 6, pc.BUFFER_DYNAMIC);
+    mesh.primitive[0].type = pc.PRIMITIVE_TRIANGLES;
+    mesh.primitive[0].base = 0;
+    mesh.primitive[0].count = 6;
+    mesh.primitive[0].indexed = false;
+
+    // Create mesh instance
+    this.meshInstance = new pc.MeshInstance(this.entity, mesh, Sprite.material);
+    this.meshInstance.castShadow = false;
+    this.meshInstance.receiveShadow = false;
+    this.meshInstance.drawOrder = this.depth;
+
     this.texture = this.textureAsset.resource;
 
     // Create a vertex buffer
-    this.vertexBuffer = new pc.VertexBuffer(gd, Sprite.vertexFormat, 6, pc.BUFFER_DYNAMIC);
     this.updateSprite();
 
-    var command = new pc.Command(pc.LAYER_HUD, pc.BLEND_NORMAL, function () {
-        if (this.entity.enabled) {
-            // Set the shader
-            gd.setShader(Sprite.shader);
-
-            gd.setBlending(true);
-            gd.setBlendFunction(pc.BLENDMODE_SRC_ALPHA, pc.BLENDMODE_ONE_MINUS_SRC_ALPHA);
-            gd.setDepthWrite(false);
-            gd.setDepthTest(false);
-
-            Sprite.resolution.set(canvas.offsetWidth, canvas.offsetHeight);
-
-            gd.scope.resolve("uResolution").setValue(Sprite.resolution.data);
-            gd.scope.resolve("uScale").setValue(this.calculateScaling().data);
-            gd.scope.resolve("uOffset").setValue(this.calculateOffset().data);
-            gd.scope.resolve("uColorMap").setValue(this.texture);
-            gd.scope.resolve("vTint").setValue(this.tint.data);
-
-            // Set the vertex buffer
-            gd.setVertexBuffer(this.vertexBuffer, 0);
-            gd.draw({
-                type: pc.PRIMITIVE_TRIANGLES,
-                base: 0,
-                count: 6,
-                indexed: false
-            });
-        }
-    }.bind(this));
-
-    this.command = command;
-    command.key = this.depth;
-
-    app.scene.drawCalls.push(command);
+    // Get layer
+    this.layer = app.scene.layers.getLayerById(pc.LAYERID_UI) || app.scene.layers.getLayerById(pc.LAYERID_WORLD);
 
     app.mouse.on('mousedown', this.onMouseDown, this);
     if (app.touch) {
@@ -213,13 +204,13 @@ Sprite.prototype.initialize = function() {
     this.on('destroy', this.onDestroy, this);
     this.on('attr:depth', function(value) {
         this.eventsEnabled = false;
-        this.command.key = value;
+        this.meshInstance.drawOrder = value;
     });
     this.on('attr:size', this.updateSprite);
     this.on('attr:uPercentage', this.updateSprite);
     this.on('attr:vPercentage', this.updateSprite);
 
-    this.onState();
+    this.onState(true);
 };
 
 Sprite.prototype.onMouseDown = function (e) {
@@ -267,19 +258,20 @@ Sprite.prototype.onClick = function (cursor) {
 };
 
 Sprite.prototype.updateSprite = function () {
-    if (!this.vertexBuffer) {
+    if (!this.meshInstance) {
         return;
     }
 
     this.eventsEnabled = false;
 
     // Fill the vertex buffer
-    this.vertexBuffer.lock();
+    var vb = this.meshInstance.mesh.vertexBuffer;
+    vb.lock();
 
     var canvas = this.app.graphicsDevice.canvas;
 
     // Add vertices
-    var iterator = new pc.VertexIterator(this.vertexBuffer);
+    var iterator = new pc.VertexIterator(vb);
     iterator.element[pc.SEMANTIC_POSITION].set(0, -this.size.y);
     iterator.element[pc.SEMANTIC_TEXCOORD0].set(0, 0);
     iterator.next();
@@ -298,7 +290,7 @@ Sprite.prototype.updateSprite = function () {
     iterator.element[pc.SEMANTIC_POSITION].set(0, 0);
     iterator.element[pc.SEMANTIC_TEXCOORD0].set(0, this.vPercentage);
 
-    this.vertexBuffer.unlock();
+    vb.unlock();
 };
 
 Sprite.prototype.calculateOffset = function () {
@@ -423,18 +415,31 @@ Sprite.prototype.calculatePivotOffset = function () {
 
 Sprite.prototype.onState = function(enabled) {
     this.eventsEnabled = false;
+
+    if (this.layer) {
+        if (enabled) {
+            this.layer.addMeshInstances([this.meshInstance]);
+        } else {
+            this.layer.removeMeshInstances([this.meshInstance]);
+        }
+    }
+
 };
 
 Sprite.prototype.update = function (dt) {
     this.eventsEnabled = true;
+    var canvas = this.app.graphicsDevice.canvas;
+    Sprite.resolution.set(canvas.offsetWidth, canvas.offsetHeight);
+    this.meshInstance.setParameter('uResolution', Sprite.resolution.data);
+    this.meshInstance.setParameter('uScale', this.calculateScaling().data);
+    this.meshInstance.setParameter('uOffset', this.calculateOffset().data);
+    this.meshInstance.setParameter('uColorMap', this.texture);
+    this.meshInstance.setParameter('vTint', this.tint.data);
 };
 
 Sprite.prototype.onDestroy = function () {
-    // remove draw call
-    if (this.command) {
-        var i = this.app.scene.drawCalls.indexOf(this.command);
-        if (i >= 0) {
-            this.app.scene.drawCalls.splice(i, 1);
-        }
+    // remove mesh instance
+    if (this.layer) {
+        this.layer.removeMeshInstances([this.meshInstance]);
     }
 };
